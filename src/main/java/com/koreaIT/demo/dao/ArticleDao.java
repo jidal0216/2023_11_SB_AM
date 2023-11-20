@@ -18,19 +18,28 @@ public interface ArticleDao {
 				SET regDate = NOW()
 					, updateDate = NOW()
 					, memberId = #{memberId}
+					, boardId = #{boardId}
 					, title = #{title}
 					, `body` = #{body}
 			""")
-	public void writeArticle(int memberId, String title, String body);
+	public void writeArticle(int memberId, int boardId, String title, String body);
 	
 	@Select("""
 			SELECT A.*, M.name AS writerName
 				FROM article AS A
 				INNER JOIN `member` AS M
 				ON A.memberId = M.id
+				WHERE A.boardId = #{boardId}
 				ORDER BY A.id DESC
 			""")
-	public List<Article> getArticles();
+	public List<Article> getArticles(int boardId);
+	
+	@Select("""
+			SELECT COUNT(*)
+				FROM article
+				WHERE boardId = #{boardId}
+			""")
+	public int getArticlesCnt(int boardId);
 	
 	@Select("""
 			SELECT A.*, M.name AS writerName
