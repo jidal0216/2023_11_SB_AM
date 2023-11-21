@@ -13,6 +13,7 @@
 <!-- 폰트어썸 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 <link rel="stylesheet" href="/resource/common.css" />
+<script src="/resource/common.js" defer="defer"></script>
 </head>
 <body>
 	<div class="h-20 flex container mx-auto text-4xl">
@@ -26,7 +27,6 @@
 				<li class="hover:underline"><a class="h-full px-3 flex items-center" href="/usr/member/login"><span>LOGIN</span></a></li>
 			</c:if>
 			<c:if test="${rq.getLoginedMemberId() != 0 }">
-				<li>${rq.getLoginedMemberId() }</li>
 				<li class="hover:underline"><a class="h-full px-3 flex items-center" href="/usr/member/doLogout"><span>LOGOUT</span></a></li>
 			</c:if>
 		</ul>

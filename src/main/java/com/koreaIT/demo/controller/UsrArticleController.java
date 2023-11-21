@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.koreaIT.demo.service.ArticleService;
@@ -52,7 +53,12 @@ public class UsrArticleController {
 	}
 	
 	@RequestMapping("/usr/article/list")
-	public String list(Model model, int boardId) {
+	public String list(Model model, @RequestParam(defaultValue = "1") int boardId, @RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "title") String searchKeywordType, @RequestParam(defaultValue = "") String searchKeyword) {
+		
+		if (page <= 0) {
+			return rq.jsReturnOnView("페이지번호가 올바르지 않습니다");
+		}
 		
 		Board board = boardService.getBoardById(boardId);
 
@@ -60,13 +66,23 @@ public class UsrArticleController {
 			return rq.jsReturnOnView("존재하지 않는 게시판입니다");
 		}
 		
-		int articlesCnt = articleService.getArticlesCnt(boardId);
+		int articlesCnt = articleService.getArticlesCnt(boardId, searchKeywordType, searchKeyword);
 		
-		List<Article> articles = articleService.getArticles(boardId);
+		int itemsInAPage = 10;
 		
+		int limitStart = (page - 1) * itemsInAPage;
+		
+		int pagesCnt = (int) Math.ceil((double) articlesCnt / itemsInAPage);
+		
+		List<Article> articles = articleService.getArticles(boardId, searchKeywordType, searchKeyword, limitStart, itemsInAPage);
+		
+		model.addAttribute("searchKeywordType", searchKeywordType);
+		model.addAttribute("searchKeyword", searchKeyword);
 		model.addAttribute("articles", articles);
 		model.addAttribute("articlesCnt", articlesCnt);
 		model.addAttribute("board", board);
+		model.addAttribute("pagesCnt", pagesCnt);
+		model.addAttribute("page", page);
 		
 		return "usr/article/list";
 	}
